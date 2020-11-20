@@ -1,5 +1,7 @@
 /*
 京东京喜工厂
+活动入口 :京东APP->游戏与互动->查看更多->京喜工厂
+或者: 京东APP首页搜索 "玩一玩" ,造物工厂即可
 cron 15 * * * * https://raw.githubusercontent.com/lxk0301/jd_scripts/master/jd_dreamFactory.js
  */
 
@@ -11,7 +13,7 @@ let ele, factoryId, productionId;
 
 let message = '', subTitle = '', option = {};
 const notify = $.isNode() ? require('./sendNotify') : '';
-let jdNotify = false;//是否关闭通知，false打开通知推送，true关闭通知推送
+let jdNotify = true;//是否关闭通知，false打开通知推送，true关闭通知推送
 
 let cookiesArr = [], cookie = '';
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
