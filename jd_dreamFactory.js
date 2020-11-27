@@ -34,7 +34,7 @@ const notify = $.isNode() ? require('./sendNotify') : '';
 let jdNotify = true;//是否关闭通知，false打开通知推送，true关闭通知推送
 
 let cookiesArr = [], cookie = '';
-const inviteCodes = ['gB99tYLjvPcEFloDgamoBw==', 'V5LkjP4WRyjeCKR9VRwcRX0bBuTz7MEK0-E99EJ7u0k=', '1uzRU5HkaUgvy0AB5Q9VUg=='];
+const inviteCodes = ['V5LkjP4WRyjeCKR9VRwcRX0bBuTz7MEK0-E99EJ7u0k='];
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
@@ -102,7 +102,7 @@ async function jdDreamFactory() {
 
 
 // 收取发电机的电力
-function collectElectricity(facId = factoryId, help = false, master = '') {
+function collectElectricity(facId = factoryId, help = false, master) {
   return new Promise(async resolve => {
     let url = `/dreamfactory/generator/CollectCurrentElectricity?zone=dream_factory&apptoken=&pgtimestamp=&phoneID=&factoryid=${facId}&doubleflag=1&sceneval=2&g_login_type=1`;
     if (help && master) {
@@ -315,7 +315,7 @@ async function helpFriends(codes) {
 function assistFriend(sharepin) {
 
   return new Promise(async resolve => {
-    const url = `/dreamfactory/friend/AssistFriend?zone=dream_factory&sharepin=${sharepin}&sceneval=2&g_login_type=1`
+    const url = `/dreamfactory/friend/AssistFriend?zone=dream_factory&sharepin=${escape(sharepin)}&sceneval=2&g_login_type=1`
     $.get(taskurl(url), async (err, resp, data) => {
       try {
         if (err) {
@@ -489,18 +489,8 @@ function stealFriend() {
         data = data['data'];
         for (let i = 0; i < data.list.length; ++i) {
           let pin = data.list[i]['encryptPin'];
-          if (data.list[i]['collectFlag'] === 1) {
-            //只有collectFlag为1的时候,才能偷取好友电力
-            const facId = await getFactoryIdByPin(pin);
-            if (facId) await collectElectricity(facId,true, data.list[i]['key'])
-            // getFactoryIdByPin(pin).then(async (facId) => {
-            //   if (facId) await collectElectricity(facId,true)
-            // }).catch(err => {
-            //
-            // })
-          } else {
-            console.log(`此好友[${pin}]暂不能被你收取电力`)
-          }
+          const facId = await getFactoryIdByPin(pin);
+          if (facId) await collectElectricity(facId,true, data.list[i]['key'])
         }
       }
       resolve()
