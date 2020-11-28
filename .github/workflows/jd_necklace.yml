@@ -1,4 +1,4 @@
-name: jd_shop
+name: jd_necklace
 on:
   workflow_dispatch:
   schedule:
