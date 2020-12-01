@@ -30,7 +30,7 @@ const JD_API_HOST = 'https://m.jingxi.com';
 
 const notify = $.isNode() ? require('./sendNotify') : '';
 let jdNotify = true;//是否关闭通知，false打开通知推送，true关闭通知推送
-const randomCount = 1;
+const randomCount = $.isNode() ? 20 : 5;
 let cookiesArr = [], cookie = '', message = '';
 const inviteCodes = ['PDPM257r_KuQhil2Y7koNw==', "gB99tYLjvPcEFloDgamoBw=="];
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
@@ -333,7 +333,16 @@ async function helpFriends() {
         console.log(`不能为自己助力,跳过`);
         continue;
       }
-      await assistFriend(code);
+      const assistFriendRes = await assistFriend(code);
+      if (assistFriendRes && assistFriendRes['ret'] === 0) {
+        console.log(`助力朋友：${code}成功，因一次只能助力一个，故跳出助力`)
+        break
+      } else if (assistFriendRes && assistFriendRes['ret'] === 11009) {
+        console.log(`助力朋友[${code}]失败：${assistFriendRes.msg}，跳出助力`);
+        break
+      } else {
+        console.log(`助力朋友[${code}]失败：${assistFriendRes.msg}`)
+      }
     }
   }
 }
@@ -344,14 +353,14 @@ function assistFriend(sharepin) {
     const options = {
       'url': `https://m.jingxi.com/dreamfactory/friend/AssistFriend?zone=dream_factory&sharepin=${escape(sharepin)}&sceneval=2&g_login_type=1`,
       'headers': {
-        "Host": "wq.jd.com",
-        "User-Agent": $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0") : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0"),
         "Accept": "*/*",
-        "Accept-Language": "zh,en-US;q=0.7,en;q=0.3",
         "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "zh-cn",
         "Connection": "keep-alive",
-        "Referer": "https://wqsd.jd.com/pingou/dream_factory/index.html",
-        "Cookie": cookie
+        "Cookie": cookie,
+        "Host": "m.jingxi.com",
+        "Referer": "https://st.jingxi.com/pingou/dream_factory/index.html",
+        "User-Agent": "jdpingou;iPhone;3.15.2;14.2;f803928b71d2fcd51c7eae549f7bc3062d17f63f;network/4g;model/iPhone11,8;appBuild/100365;ADID/0E38E9F1-4B4C-40A4-A479-DD15E58A5623;supportApplePay/1;hasUPPay/0;pushNoticeIsOpen/1;hasOCPay/0;supportBestPay/0;session/2;pap/JA2015_311210;brand/apple;supportJDSHWK/1;"
       }
     }
     $.get(options, (err, resp, data) => {
@@ -362,17 +371,17 @@ function assistFriend(sharepin) {
         } else {
           if (safeGet(data)) {
             data = JSON.parse(data);
-            if (data['ret'] === 0) {
-              console.log(`助力朋友：${sharepin}成功`)
-            } else {
-              console.log(`助力朋友[${sharepin}]失败：${data.msg}`)
-            }
+            // if (data['ret'] === 0) {
+            //   console.log(`助力朋友：${sharepin}成功`)
+            // } else {
+            //   console.log(`助力朋友[${sharepin}]失败：${data.msg}`)
+            // }
           }
         }
       } catch (e) {
         $.logErr(e, resp)
       } finally {
-        resolve();
+        resolve(data);
       }
     })
   })
