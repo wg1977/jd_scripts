@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   ###### need change
   schedule:
-    - cron: '1 0,14,10 * * *'
+    - cron: '1 0,4,10 * * *'
 jobs:
   build:
     runs-on: ubuntu-latest
