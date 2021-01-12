@@ -1,10 +1,10 @@
 ###### need change
-name: jd_watch
+name: template
 on:
   workflow_dispatch:
   ###### need change
-  schedule:
-    - cron: '10 1 * * *'
+#   schedule:
+#     - cron: '10 1 * * *'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
       ###### need change
       - name: '运行 【京东脚本】'
         run: |
-          node jd_watch.js
+          node template.js
         env:
           JD_COOKIE: ${{ secrets.JD_COOKIE }}
           JD_DEBUG: ${{ secrets.JD_DEBUG }}
