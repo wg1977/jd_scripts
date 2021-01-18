@@ -1,4 +1,4 @@
-name: merge-master2main
+name: sync + merge
 on:
   schedule:
     - cron: '30 0-15/3 * * *'
