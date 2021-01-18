@@ -1,10 +1,8 @@
-name: merge-from-master
+name: merge-master2main
 on:
   schedule:
-    - cron: '1 0-15/3 * * *'
+    - cron: '30 0-15/3 * * *'
   workflow_dispatch:
-  watch:
-    types: started
 jobs:
   merge-branch:
     env:
@@ -15,16 +13,16 @@ jobs:
         with:
           persist-credentials: false
           
-      - name: sync lxk0301-scripts
+      - name: sync LXK9301-jd_scripts
         uses: repo-sync/github-sync@v2
         if: env.PAT
         with:
-          source_repo: "https://github.com/lxk0301/jd_scripts.git"
+          source_repo: "https://github.com/LXK9301/jd_scripts.git"
           source_branch: "master"
           destination_branch: "master"
           github_token: ${{ secrets.PAT }}
   
-      - name: Merge main from master	
+      - name: Merge master to main
         uses: devmasx/merge-branch@v1.3.1	
         if: env.PAT	
         with:	
